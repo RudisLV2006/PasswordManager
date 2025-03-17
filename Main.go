@@ -1,9 +1,11 @@
 package main
 
-import (
-	"fmt"
-)
+import "server/api/sql"
 
 func main() {
-	fmt.Print("sdsdsd")
+	dbFile := "sql/PassMangerDB.db"
+	sql.Check(dbFile)
+
+	sql.Connection(dbFile)
+
 }
