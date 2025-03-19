@@ -4,8 +4,6 @@ import (
 	"errors"
 	"os"
 	"server/api/data_access"
-
-	_ "github.com/glebarez/go-sqlite"
 )
 
 func main() {

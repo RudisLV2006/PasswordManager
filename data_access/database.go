@@ -14,7 +14,7 @@ func Create(dbFile string) error {
 	}
 	defer db.Close()
 
-	sqlStmt := `
+	sqlStatment := `
 		CREATE TABLE IF NOT EXISTS user(
 	user_id INT,
 	username CHAR(16) NOT NULL,
@@ -48,9 +48,9 @@ CREATE TABLE IF NOT EXISTS account_site(
 	FOREIGN KEY (site_id) REFERENCES website(site_id)
 );
 		`
-	_, err = db.Exec(sqlStmt)
+	_, err = db.Exec(sqlStatment)
 	if err != nil {
-		return fmt.Errorf("Error creating tables: %w", err)
+		return fmt.Errorf("Error creating tables:")
 	}
 	fmt.Println("Database and table created successfully!")
 	return nil
