@@ -4,45 +4,45 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"server/api/model"
+
+	_ "github.com/glebarez/go-sqlite"
 )
 
-func Create(dbFile string) error {
+func CreateTables(dbFile string) error {
 	db, err := sql.Open("sqlite", dbFile)
 
 	if err != nil {
-		log.Fatal("Error")
+		log.Fatal("Can't make connect")
 	}
 	defer db.Close()
 
 	sqlStatment := `
-		CREATE TABLE IF NOT EXISTS user(
-	user_id INT,
+		CREATE TABLE IF NOT EXISTS users(
+	user_id INTEGER PRIMARY KEY,
 	username CHAR(16) NOT NULL,
 	name VARCHAR(20),
 	password TEXT NOT NULL,
-	email VARCHAR(100) UNIQUE NOT NULL,
-	PRIMARY KEY (user_id)
+	email VARCHAR(100) UNIQUE NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS account(
-	account_id INT,
+CREATE TABLE IF NOT EXISTS accounts(
+	account_id INTEGER PRIMARY KEY,
 	username CHAR(24),
 	encrypted_password TEXT NOT NULL,
 	salt TEXT NOT NULL,
-	user_id INT,
-	PRIMARY KEY (account_id),
+	user_id INTEGER NOT NULL,
 	FOREIGN KEY (user_id) REFERENCES user(user_id)
 );
-CREATE TABLE IF NOT EXISTS website (
-	site_id INT,
+CREATE TABLE IF NOT EXISTS websites (
+	site_id INTEGER PRIMARY KEY,
 	site CHAR(30) NOT NULL,
-	url TEXT,
-	PRIMARY KEY (site_id)
+	url TEXT
 );
 
 CREATE TABLE IF NOT EXISTS account_site(
-	account_id INT,
-	site_id INT,
+	account_id INTEGER NOT NULL,
+	site_id INTEGER NOT NULL,
 	PRIMARY KEY (account_id, site_id),
 	FOREIGN KEY (account_id) REFERENCES account(account_id) ON DELETE CASCADE,
 	FOREIGN KEY (site_id) REFERENCES website(site_id)
@@ -54,4 +54,20 @@ CREATE TABLE IF NOT EXISTS account_site(
 	}
 	fmt.Println("Database and table created successfully!")
 	return nil
+}
+
+func InsertWebsite(website model.Website, dbFile string) {
+	db, err := sql.Open("sqlite", dbFile)
+
+	if err != nil {
+		log.Fatal("Can't make connect")
+	}
+	defer db.Close()
+	var insertStatement string = `INSERT INTO websites (site,url) VALUES (?,?);`
+	_, err = db.Exec(insertStatement, website.Site, website.URL)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println("Website inserted successfully!")
 }
