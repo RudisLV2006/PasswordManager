@@ -7,7 +7,18 @@ type Account struct {
 	Salt         string
 }
 
-type Website struct {
-	Site string
-	URL  string
+type website struct {
+	site string
+	url  string
+}
+
+func CreateWebsite(site, email string) *website {
+	return &website{}
+}
+
+func (w *website) GetSite() string {
+	return w.site
+}
+func (w *website) SetSite() string {
+	w.site = 
 }

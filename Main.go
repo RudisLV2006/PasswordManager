@@ -11,7 +11,7 @@ import (
 
 func main() {
 	dbFile := "sql/PassMangerDB.db"
-	website := model.Website{}
+	website := model.CreateWebsite()
 	scanner := bufio.NewScanner(os.Stdin)
 
 	if _, err := os.Stat(dbFile); errors.Is(err, os.ErrNotExist) {
