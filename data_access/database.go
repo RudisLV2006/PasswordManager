@@ -64,10 +64,18 @@ func InsertWebsite(website model.Website, dbFile string) {
 	}
 	defer db.Close()
 	var insertStatement string = `INSERT INTO websites (site,url) VALUES (?,?);`
-	_, err = db.Exec(insertStatement, website.Site, website.URL)
+
+	_, err = db.Exec(insertStatement, toNullString(website.Site), toNullString(website.URL))
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	fmt.Println("Website inserted successfully!")
+}
+
+func toNullString(s string) sql.NullString {
+	if s == "" {
+		return sql.NullString{Valid: false}
+	}
+	return sql.NullString{String: s, Valid: true}
 }
