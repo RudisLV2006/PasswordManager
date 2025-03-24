@@ -7,6 +7,34 @@ type Account struct {
 	salt         string
 }
 
+func CreateAccount() *Account {
+	return &Account{}
+}
+func (a *Account) SetUsername(username string) {
+	a.username = username
+}
+func (a *Account) GetUsername() string {
+	return a.username
+}
+func (a *Account) SetAccountName(account_name string) {
+	a.account_name = account_name
+}
+func (a *Account) GetAccountName() string {
+	return a.account_name
+}
+func (a *Account) SetPassword(password string) {
+	a.password = password
+}
+func (a *Account) GetPassword() string {
+	return a.password
+}
+func (a *Account) SetSalt(salt string) {
+	a.salt = salt
+}
+func (a *Account) GetSalt() string {
+	return a.salt
+}
+
 type Website struct {
 	site string
 	url  string

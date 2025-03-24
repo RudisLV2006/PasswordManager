@@ -26,6 +26,11 @@ func main() {
 			case "1":
 				// Ask for website details
 				website := model.CreateWebsite()
+				/*
+					website := model.CreateWebsite()
+					fmt.Print(&website)
+				*/
+
 				fmt.Println("Enter site name: ")
 				if scanner.Scan() {
 					website.SetSite(scanner.Text()) // Read site name
@@ -41,8 +46,19 @@ func main() {
 				data_access.InsertWebsite(website, dbFile)
 
 			case "2":
-				fmt.Println("I will be implemented")
-				fmt.Print(model.CreateWebsite())
+				// fmt.Println("I will be implemented")
+				account := model.CreateAccount()
+
+				fmt.Println("Enter account username")
+				if scanner.Scan() {
+					account.SetUsername(scanner.Text())
+				}
+				account.SetAccountName("Kristaps")
+				fmt.Println("Enter account password")
+				if scanner.Scan() {
+					account.SetPassword(scanner.Text())
+				}
+				fmt.Print("I am implemented")
 
 			default:
 				fmt.Println("Invalid choice. Please try again.")
