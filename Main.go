@@ -11,14 +11,13 @@ import (
 
 func main() {
 	dbFile := "sql/PassMangerDB.db"
-	website := model.CreateWebsite()
 	scanner := bufio.NewScanner(os.Stdin)
 
 	if _, err := os.Stat(dbFile); errors.Is(err, os.ErrNotExist) {
 		data_access.CreateTables(dbFile)
 	}
 	for {
-		fmt.Print("Enter your choise:\n", "1:Insert website: ")
+		fmt.Print("Enter your choise:\n", "1:Insert website \n", "2:Insert Account: ")
 		if scanner.Scan() {
 			output := scanner.Text()
 
@@ -26,19 +25,24 @@ func main() {
 			switch output {
 			case "1":
 				// Ask for website details
+				website := model.CreateWebsite()
 				fmt.Println("Enter site name: ")
 				if scanner.Scan() {
-					website.Site = scanner.Text() // Read site name
+					website.SetSite(scanner.Text()) // Read site name
 				}
 
 				// Ask for the website URL
 				fmt.Println("Enter site URL (optional):")
 				if scanner.Scan() {
-					website.URL = scanner.Text() // Read site URL
+					website.SetURL(scanner.Text()) // Read site URL
 				}
 
 				// Insert website into database
 				data_access.InsertWebsite(website, dbFile)
+
+			case "2":
+				fmt.Println("I will be implemented")
+				fmt.Print(model.CreateWebsite())
 
 			default:
 				fmt.Println("Invalid choice. Please try again.")

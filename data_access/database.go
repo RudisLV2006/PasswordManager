@@ -56,7 +56,7 @@ CREATE TABLE IF NOT EXISTS account_site(
 	return nil
 }
 
-func InsertWebsite(website model.Website, dbFile string) {
+func InsertWebsite(website *model.Website, dbFile string) {
 	db, err := sql.Open("sqlite", dbFile)
 
 	if err != nil {
@@ -65,7 +65,7 @@ func InsertWebsite(website model.Website, dbFile string) {
 	defer db.Close()
 	var insertStatement string = `INSERT INTO websites (site,url) VALUES (?,?);`
 
-	_, err = db.Exec(insertStatement, toNullString(website.Site), toNullString(website.URL))
+	_, err = db.Exec(insertStatement, toNullString(website.GetSite()), toNullString(website.GetURL()))
 	if err != nil {
 		log.Fatal(err)
 	}
