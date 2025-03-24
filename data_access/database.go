@@ -1,10 +1,14 @@
 package data_access
 
 import (
+	"crypto/sha1"
 	"database/sql"
+	"encoding/base64"
 	"fmt"
 	"log"
 	"server/api/model"
+
+	"golang.org/x/crypto/pbkdf2"
 
 	_ "github.com/glebarez/go-sqlite"
 )
@@ -73,9 +77,31 @@ func InsertWebsite(website *model.Website, dbFile string) {
 	fmt.Println("Website inserted successfully!")
 }
 
+func InsertAccount(account *model.Account, dbFile string) {
+	db, err := sql.Open("sqlite", dbFile)
+
+	if err != nil {
+		log.Fatal("Can't make connect")
+	}
+	defer db.Close()
+	var insertStatement string = `INSERT INTO accounts (username,encrypted_password,salt,user_id) VALUES (?,?,?,?);`
+	_, err = db.Exec(insertStatement, toNullString(account.GetUsername()), toNullString(string(encrypt(account.GetPassword(), account.GetSalt()))), toNullString(string(account.GetSalt())), 1)
+	fmt.Println(base64.StdEncoding.EncodeToString(account.GetSalt()))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println("Website inserted successfully!")
+}
+
 func toNullString(s string) sql.NullString {
 	if s == "" {
 		return sql.NullString{Valid: false}
 	}
 	return sql.NullString{String: s, Valid: true}
+}
+
+func encrypt(password string, salt []byte) []byte {
+	const iteration int = 10000
+	return pbkdf2.Key([]byte(password), salt, iteration, 32, sha1.New)
 }

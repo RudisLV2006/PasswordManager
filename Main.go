@@ -2,8 +2,10 @@ package main
 
 import (
 	"bufio"
+	"crypto/rand"
 	"errors"
 	"fmt"
+	"log"
 	"os"
 	"server/api/data_access"
 	"server/api/model"
@@ -58,11 +60,25 @@ func main() {
 				if scanner.Scan() {
 					account.SetPassword(scanner.Text())
 				}
-				fmt.Print("I am implemented")
+				account.SetSalt(makeSalt())
+
+				data_access.InsertAccount(account, dbFile)
+
+				// fmt.Print("I am implemented")
 
 			default:
 				fmt.Println("Invalid choice. Please try again.")
 			}
 		}
 	}
+}
+
+func makeSalt() []byte {
+	salt := make([]byte, 16)
+
+	_, err := rand.Read(salt)
+	if err != nil {
+		log.Fatal("Cant create salt")
+	}
+	return salt
 }

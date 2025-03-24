@@ -4,7 +4,7 @@ type Account struct {
 	username     string
 	account_name string
 	password     string
-	salt         string
+	salt         []byte
 }
 
 func CreateAccount() *Account {
@@ -28,10 +28,10 @@ func (a *Account) SetPassword(password string) {
 func (a *Account) GetPassword() string {
 	return a.password
 }
-func (a *Account) SetSalt(salt string) {
+func (a *Account) SetSalt(salt []byte) {
 	a.salt = salt
 }
-func (a *Account) GetSalt() string {
+func (a *Account) GetSalt() []byte {
 	return a.salt
 }
 
