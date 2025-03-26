@@ -13,7 +13,7 @@ import (
 	_ "github.com/glebarez/go-sqlite"
 )
 
-func CreateTables(dbFile string) error {
+func CreateTables(dbFile string) {
 	db, err := sql.Open("sqlite", dbFile)
 
 	if err != nil {
@@ -54,10 +54,9 @@ CREATE TABLE IF NOT EXISTS account_site(
 		`
 	_, err = db.Exec(sqlStatment)
 	if err != nil {
-		return fmt.Errorf("Error creating tables:")
+		log.Fatal("Error creating tables:")
 	}
 	fmt.Println("Database and table created successfully!")
-	return nil
 }
 
 func InsertWebsite(website *model.Website, dbFile string) {
@@ -85,8 +84,9 @@ func InsertAccount(account *model.Account, dbFile string) {
 	}
 	defer db.Close()
 	var insertStatement string = `INSERT INTO accounts (username,encrypted_password,salt,user_id) VALUES (?,?,?,?);`
-	_, err = db.Exec(insertStatement, toNullString(account.GetUsername()), toNullString(string(encrypt(account.GetPassword(), account.GetSalt()))), toNullString(string(account.GetSalt())), 1)
-	fmt.Println(base64.StdEncoding.EncodeToString(account.GetSalt()))
+	_, err = db.Exec(insertStatement, toNullString(account.GetUsername()),
+		toNullString(base64.StdEncoding.EncodeToString(encrypt(account.GetPassword(), account.GetSalt()))),
+		toNullString(base64.StdEncoding.EncodeToString(account.GetSalt())), 1)
 	if err != nil {
 		log.Fatal(err)
 	}
