@@ -62,6 +62,11 @@ func main() {
 				}
 				account.SetSalt(makeSalt())
 
+				fmt.Println("Enter secret key(key only belongs to user, if forget then restore data is impossible)")
+				if scanner.Scan() {
+					account.SetKey(scanner.Text())
+				}
+
 				data_access.InsertAccount(account, dbFile)
 
 				// fmt.Print("I am implemented")

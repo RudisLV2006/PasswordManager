@@ -1,6 +1,9 @@
 package data_access
 
 import (
+	"crypto/aes"
+	"crypto/cipher"
+	"crypto/rand"
 	"crypto/sha1"
 	"database/sql"
 	"encoding/base64"
@@ -82,10 +85,13 @@ func InsertAccount(account *model.Account, dbFile string) {
 	if err != nil {
 		log.Fatal("Can't make connect")
 	}
+
+	key := DeriveEncryptionKey(account.GetKey(), account.GetSalt())
+
 	defer db.Close()
 	var insertStatement string = `INSERT INTO accounts (username,encrypted_password,salt,user_id) VALUES (?,?,?,?);`
 	_, err = db.Exec(insertStatement, toNullString(account.GetUsername()),
-		toNullString(base64.StdEncoding.EncodeToString(encrypt(account.GetPassword(), account.GetSalt()))),
+		toNullString(base64.StdEncoding.EncodeToString(encryptIt([]byte(account.GetPassword()), key))),
 		toNullString(base64.StdEncoding.EncodeToString(account.GetSalt())), 1)
 	if err != nil {
 		log.Fatal(err)
@@ -101,7 +107,52 @@ func toNullString(s string) sql.NullString {
 	return sql.NullString{String: s, Valid: true}
 }
 
-func encrypt(password string, salt []byte) []byte {
+func DeriveEncryptionKey(sk string, salt []byte) []byte {
 	const iteration int = 10000
-	return pbkdf2.Key([]byte(password), salt, iteration, 32, sha1.New)
+	return pbkdf2.Key([]byte(sk), salt, iteration, 32, sha1.New)
+}
+
+func encryptIt(value []byte, encryptedKey []byte) []byte {
+	aesBlock, err := aes.NewCipher(encryptedKey)
+	if err != nil {
+		return nil
+	}
+
+	gcmInstance, err := cipher.NewGCM(aesBlock)
+	if err != nil {
+		return nil
+	}
+
+	nonce := make([]byte, gcmInstance.NonceSize())
+
+	if _, err := rand.Read(nonce); err != nil {
+		return nil
+	}
+
+	ciphertext := gcmInstance.Seal(nil, nonce, value, nil)
+
+	return append(nonce, ciphertext...)
+}
+
+func DecryptIt(ciphered []byte, encryptedKey []byte) string {
+	aesBlock, err := aes.NewCipher(encryptedKey)
+	if err != nil {
+		return ""
+	}
+
+	gcmInstance, err := cipher.NewGCM(aesBlock)
+	if err != nil {
+		return ""
+	}
+
+	nonceSize := gcmInstance.NonceSize()
+	nonce, cipheredText := ciphered[:nonceSize], ciphered[nonceSize:]
+
+	plaintext, err := gcmInstance.Open(nil, nonce, cipheredText, nil)
+	if err != nil {
+		return ""
+	}
+
+	plaintextStr := string(plaintext)
+	return plaintextStr
 }

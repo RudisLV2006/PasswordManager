@@ -4,6 +4,7 @@ type Account struct {
 	username     string
 	account_name string
 	password     string
+	secret_key   string
 	salt         []byte
 }
 
@@ -33,6 +34,12 @@ func (a *Account) SetSalt(salt []byte) {
 }
 func (a *Account) GetSalt() []byte {
 	return a.salt
+}
+func (a *Account) SetKey(secret_key string) {
+	a.secret_key = secret_key
+}
+func (a *Account) GetKey() string {
+	return a.secret_key
 }
 
 type Website struct {
