@@ -66,8 +66,25 @@ func main() {
 				if scanner.Scan() {
 					account.SetKey(scanner.Text())
 				}
+				fmt.Println("Enter website site")
+				if scanner.Scan() {
+					account.SetSite(scanner.Text())
+				}
 
-				data_access.InsertAccount(account, dbFile)
+				accountID, err := data_access.InsertAccount(account, dbFile)
+				if err != nil {
+					fmt.Print("Can't get account last id")
+					return
+				}
+
+				siteID, err := data_access.SelectSite(dbFile, account.GetSite())
+
+				if err != nil {
+					fmt.Print(err)
+					return
+				}
+
+				data_access.LinkedTable(accountID, siteID, dbFile)
 
 				// fmt.Print("I am implemented")
 

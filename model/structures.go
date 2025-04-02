@@ -2,6 +2,7 @@ package model
 
 type Account struct {
 	username     string
+	site         string
 	account_name string
 	password     string
 	secret_key   string
@@ -40,6 +41,12 @@ func (a *Account) SetKey(secret_key string) {
 }
 func (a *Account) GetKey() string {
 	return a.secret_key
+}
+func (a *Account) GetSite() string {
+	return a.site
+}
+func (a *Account) SetSite(site string) {
+	a.site = site
 }
 
 type Website struct {

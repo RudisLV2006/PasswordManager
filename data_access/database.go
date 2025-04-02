@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"log"
 	"server/api/model"
+	"strconv"
 
 	"golang.org/x/crypto/pbkdf2"
 
@@ -79,7 +80,7 @@ func InsertWebsite(website *model.Website, dbFile string) {
 	fmt.Println("Website inserted successfully!")
 }
 
-func InsertAccount(account *model.Account, dbFile string) {
+func InsertAccount(account *model.Account, dbFile string) (string, error) {
 	db, err := sql.Open("sqlite", dbFile)
 
 	if err != nil {
@@ -89,8 +90,9 @@ func InsertAccount(account *model.Account, dbFile string) {
 	key := DeriveEncryptionKey(account.GetKey(), account.GetSalt())
 
 	defer db.Close()
-	var insertStatement string = `INSERT INTO accounts (username,encrypted_password,salt,user_id) VALUES (?,?,?,?);`
-	_, err = db.Exec(insertStatement, toNullString(account.GetUsername()),
+
+	const insertStatement string = `INSERT INTO accounts (username,encrypted_password,salt,user_id) VALUES (?,?,?,?);`
+	res, err := db.Exec(insertStatement, toNullString(account.GetUsername()),
 		toNullString(base64.StdEncoding.EncodeToString(encryptIt([]byte(account.GetPassword()), key))),
 		toNullString(base64.StdEncoding.EncodeToString(account.GetSalt())), 1)
 	if err != nil {
@@ -98,8 +100,47 @@ func InsertAccount(account *model.Account, dbFile string) {
 	}
 
 	fmt.Println("Website inserted successfully!")
-}
 
+	lastInsertId, err := res.LastInsertId()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return strconv.FormatInt(lastInsertId, 10), nil
+}
+func LinkedTable(accID string, sitID string, dbFile string) {
+	db, err := sql.Open("sqlite", dbFile)
+
+	if err != nil {
+		log.Fatal("Can't make connect")
+	}
+	const insertStatement string = `INSERT INTO account_site VALUES (?,?);`
+	_, err = db.Exec(insertStatement, accID, sitID)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+func SelectSite(dbFile string, site string) (string, error) {
+	var siteID string
+	db, err := sql.Open("sqlite", dbFile)
+
+	if err != nil {
+		log.Fatal("Can't make connect")
+	}
+	defer db.Close()
+
+	query := "SELECT site_id FROM websites WHERE site = ?"
+
+	err = db.QueryRow(query, site).Scan(&siteID)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return "", fmt.Errorf("no site found with name: %s", site)
+		}
+		return "", fmt.Errorf("query error: %v", err)
+	}
+
+	return siteID, nil
+}
 func toNullString(s string) sql.NullString {
 	if s == "" {
 		return sql.NullString{Valid: false}
