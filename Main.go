@@ -71,20 +71,11 @@ func main() {
 					account.SetSite(scanner.Text())
 				}
 
-				accountID, err := data_access.InsertAccount(account, dbFile)
-				if err != nil {
-					fmt.Print("Can't get account last id")
-					return
-				}
-
-				siteID, err := data_access.SelectSite(dbFile, account.GetSite())
-
+				err := data_access.CreateAccountAndLinkSite(account, dbFile)
 				if err != nil {
 					fmt.Print(err)
 					return
 				}
-
-				data_access.LinkedTable(accountID, siteID, dbFile)
 
 				// fmt.Print("I am implemented")
 
