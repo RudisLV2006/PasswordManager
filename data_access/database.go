@@ -145,7 +145,7 @@ func CreateAccountAndLinkSite(account *model.Account, dbFile string) error {
 	}
 
 	// Select site ID within the transaction
-	siteID, err := SelectSite(dbFile, account.GetSite(), tx)
+	siteID, err := go SelectSite(dbFile, account.GetSite(), tx)
 	if err != nil {
 		return fmt.Errorf("error selecting site: %v", err)
 	}
