@@ -14,7 +14,6 @@ import (
 
 	"golang.org/x/crypto/pbkdf2"
 
-	_ "github.com/glebarez/go-sqlite"
 	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/sqlite"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
