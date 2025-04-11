@@ -3,7 +3,6 @@ package main
 import (
 	"bufio"
 	"crypto/rand"
-	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -14,10 +13,10 @@ import (
 func main() {
 	dbFile := "sql/PassMangerDB.db"
 	scanner := bufio.NewScanner(os.Stdin)
+	/* if _, err := os.Stat(dbFile); errors.Is(err, os.ErrNotExist) {
+		data_access.ApplyMigrations(dbFile)
+	} */
 
-	if _, err := os.Stat(dbFile); errors.Is(err, os.ErrNotExist) {
-		data_access.CreateTables(dbFile)
-	}
 	for {
 		fmt.Print("Enter your choise:\n", "1:Insert website \n", "2:Insert Account: ")
 		if scanner.Scan() {
