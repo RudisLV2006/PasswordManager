@@ -1,12 +1,12 @@
 package model
 
 type Account struct {
-	username     string
-	site         string
-	account_name string
-	password     string
-	secret_key   string
-	salt         []byte
+	username    string `json:"username"`
+	site        string `json:"site"`
+	accountName string `json:"account_name"`
+	password    string `json:"password"`
+	secret_key  string `json:"secretKey"`
+	salt        []byte
 }
 
 func CreateAccount() *Account {
@@ -19,10 +19,10 @@ func (a *Account) GetUsername() string {
 	return a.username
 }
 func (a *Account) SetAccountName(account_name string) {
-	a.account_name = account_name
+	a.accountName = account_name
 }
 func (a *Account) GetAccountName() string {
-	return a.account_name
+	return a.accountName
 }
 func (a *Account) SetPassword(password string) {
 	a.password = password
@@ -50,8 +50,8 @@ func (a *Account) SetSite(site string) {
 }
 
 type Website struct {
-	site string
-	url  string
+	Site string `json:"site"`
+	Url  string `json:"url"`
 }
 
 // Konstroktors
@@ -60,16 +60,16 @@ func CreateWebsite() *Website { //rādītājs, saglabā atmiņas adresi(derefere
 }
 
 func (w *Website) GetSite() string {
-	return w.site
+	return w.Site
 }
 func (w *Website) SetSite(site string) {
-	w.site = site
+	w.Site = site
 }
 
 func (w *Website) GetURL() string {
-	return w.url
+	return w.Url
 }
 
 func (w *Website) SetURL(url string) {
-	w.url = url
+	w.Url = url
 }
