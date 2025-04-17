@@ -23,8 +23,14 @@ func postWebsite(c *gin.Context) {
 	}
 
 	site = append(site, newSite)
-	c.IndentedJSON(http.StatusCreated, newSite)
+	fmt.Printf("DEBUG NewSite Addr: %p, Data: %+v\n", &newSite, newSite)
 
+	fmt.Printf("Current slice: %+v\n", site)
+
+	c.IndentedJSON(http.StatusCreated, newSite)
+}
+func debug(c *gin.Context) {
+	c.IndentedJSON(http.StatusOK, len(site))
 }
 func main() {
 	site = append(site, *model.CreateWebsite())
@@ -38,74 +44,10 @@ func main() {
 
 	router := gin.Default()
 	router.GET("/website", getWebsite)
+	router.GET("/debug", debug)
 	router.POST("/website", postWebsite)
 
 	router.Run("localhost:8080")
-
-	// for {
-	// 	fmt.Print("Enter your choise:\n", "1:Insert website \n", "2:Insert Account: ")
-	// 	if scanner.Scan() {
-	// 		output := scanner.Text()
-
-	// 		// Handle the user's input based on choice
-	// 		switch output {
-	// 		case "1":
-	// 			// Ask for website details
-	// 			website := model.CreateWebsite()
-	// 			/*
-	// 				website := model.CreateWebsite()
-	// 				fmt.Print(&website)
-	// 			*/
-
-	// 			fmt.Println("Enter site name: ")
-	// 			if scanner.Scan() {
-	// 				website.SetSite(scanner.Text()) // Read site name
-	// 			}
-
-	// 			// Ask for the website URL
-	// 			fmt.Println("Enter site URL (optional):")
-	// 			if scanner.Scan() {
-	// 				website.SetURL(scanner.Text()) // Read site URL
-	// 			}
-
-	// 			// Insert website into database
-	// 			data_access.InsertWebsite(website, dbFile)
-
-	// 		case "2":
-	// 			// fmt.Println("I will be implemented")
-	// 			account := model.CreateAccount()
-
-	// 			fmt.Println("Enter account username")
-	// 			if scanner.Scan() {
-	// 				account.SetUsername(scanner.Text())
-	// 			}
-	// 			account.SetAccountName("Kristaps")
-	// 			fmt.Println("Enter account password")
-	// 			if scanner.Scan() {
-	// 				account.SetPassword(scanner.Text())
-	// 			}
-	// 			account.SetSalt(makeSalt())
-
-	// 			fmt.Println("Enter secret key(key only belongs to user, if forget then restore data is impossible)")
-	// 			if scanner.Scan() {
-	// 				account.SetKey(scanner.Text())
-	// 			}
-	// 			fmt.Println("Enter website site")
-	// 			if scanner.Scan() {
-	// 				account.SetSite(scanner.Text())
-	// 			}
-
-	// 			err := data_access.CreateAccountAndLinkSite(account, dbFile)
-	// 			if err != nil {
-	// 				fmt.Print(err)
-	// 				return
-	// 			}
-
-	// 		default:
-	// 			fmt.Println("Invalid choice. Please try again.")
-	// 		}
-	// 	}
-	// }
 }
 
 func makeSalt() []byte {
