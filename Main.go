@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
+	"server/api/data_access"
 	"server/api/model"
 
 	"github.com/gin-gonic/gin"
@@ -33,6 +35,10 @@ func debug(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, len(site))
 }
 func main() {
+	dbFile := "sql/PassManagerDB.db"
+	if _, err := os.Stat(dbFile); err != nil {
+		data_access.ApplyMigrations(dbFile)
+	}
 	site = append(site, *model.CreateWebsite())
 	site = append(site, *model.CreateWebsite())
 	site[0].Site = "Test"
