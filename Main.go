@@ -10,29 +10,35 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var site [2]model.Website
+var site []model.Website
 
 func getWebsite(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, site)
 }
-func main() {
-	// dbFile := "sql/PassMangerDB.db"
-	// scanner := bufio.NewScanner(os.Stdin)
-	// if _, err := os.Stat(dbFile); errors.Is(err, os.ErrNotExist) {
-	// 	data_access.ApplyMigrations(dbFile)
-	// }
+func postWebsite(c *gin.Context) {
+	var newSite = *model.CreateWebsite()
 
-	site[0] = *model.CreateWebsite()
-	site[1] = *model.CreateWebsite()
-	site[0].SetSite("test")
-	site[0].SetURL("sdsd")
-	site[1].SetSite("sdad")
-	site[1].SetURL("gdg")
+	if err := c.BindJSON(&newSite); err != nil {
+		return
+	}
+
+	site = append(site, newSite)
+	c.IndentedJSON(http.StatusCreated, newSite)
+
+}
+func main() {
+	site = append(site, *model.CreateWebsite())
+	site = append(site, *model.CreateWebsite())
+	site[0].Site = "Test"
+	site[0].Url = "tet"
+	site[1].Site = "sdsd"
+	site[1].Url = "sfasf"
 
 	fmt.Printf("DEBUG: %+v\n", site)
 
 	router := gin.Default()
 	router.GET("/website", getWebsite)
+	router.POST("/website", postWebsite)
 
 	router.Run("localhost:8080")
 
