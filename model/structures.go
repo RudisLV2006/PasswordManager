@@ -1,12 +1,19 @@
 package model
 
 type Account struct {
-	username    string `json:"username"`
-	site        string `json:"site"`
-	accountName string `json:"account_name"`
-	password    string `json:"password"`
-	secret_key  string `json:"secretKey"`
+	Username    string `json:"username"`
+	Site        string `json:"site"`
+	AccountName string `json:"account_name"`
+	Password    string `json:"password"`
+	Secret_key  string `json:"secretKey"`
 	salt        []byte
+}
+
+func (a *Account) SetSalt(salt []byte) {
+	a.salt = salt
+}
+func (a *Account) GetSalt() []byte {
+	return a.salt
 }
 
 func CreateAccount() *Account {

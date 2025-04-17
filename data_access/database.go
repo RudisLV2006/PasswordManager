@@ -45,7 +45,7 @@ func InsertWebsite(website *model.Website, dbFile string) {
 	defer db.Close()
 	var insertStatement string = `INSERT INTO websites (site,url) VALUES (?,?);`
 
-	_, err = db.Exec(insertStatement, toNullString(website.GetSite()), toNullString(website.GetURL()))
+	_, err = db.Exec(insertStatement, toNullString(website.Site), toNullString(website.Url))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -54,11 +54,11 @@ func InsertWebsite(website *model.Website, dbFile string) {
 }
 
 func InsertAccount(account *model.Account, dbFile string, tx *sql.Tx) (string, error) {
-	key := DeriveEncryptionKey(account.GetKey(), account.GetSalt())
+	key := DeriveEncryptionKey(account.Secret_key, account.GetSalt())
 
 	const insertStatement string = `INSERT INTO accounts (username,encrypted_password,salt,user_id) VALUES (?,?,?,?);`
-	res, err := tx.Exec(insertStatement, toNullString(account.GetUsername()),
-		toNullString(base64.StdEncoding.EncodeToString(encryptIt([]byte(account.GetPassword()), key))),
+	res, err := tx.Exec(insertStatement, toNullString(account.Username),
+		toNullString(base64.StdEncoding.EncodeToString(encryptIt([]byte(account.Password), key))),
 		toNullString(base64.StdEncoding.EncodeToString(account.GetSalt())), 1)
 	if err != nil {
 		log.Fatal(err)
@@ -118,7 +118,7 @@ func CreateAccountAndLinkSite(account *model.Account, dbFile string) error {
 	}
 
 	// Select site ID within the transaction
-	siteID, err := SelectSite(dbFile, account.GetSite(), tx)
+	siteID, err := SelectSite(dbFile, account.Site, tx)
 	if err != nil {
 		return fmt.Errorf("error selecting site: %v", err)
 	}
