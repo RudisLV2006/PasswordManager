@@ -20,6 +20,10 @@ import (
 )
 
 func ApplyMigrations(dbFile string) {
+	_, err := sql.Open("sqlite", dbFile)
+	if err != nil {
+		log.Fatalf("Could not create database: %v", err)
+	}
 	m, err := migrate.New(
 		"file://sql/migrations",
 		"sqlite://"+dbFile,
