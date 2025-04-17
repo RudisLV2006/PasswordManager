@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"os"
 	"server/api/data_access"
 	"server/api/model"
 
@@ -13,6 +12,7 @@ import (
 )
 
 var site []model.Website
+var db = data_access.MakeConnection()
 
 func getWebsite(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, site)
@@ -35,16 +35,9 @@ func debug(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, len(site))
 }
 func main() {
-	dbFile := "sql/PassManagerDB.db"
-	if _, err := os.Stat(dbFile); err != nil {
-		data_access.ApplyMigrations(dbFile)
-	}
-	site = append(site, *model.CreateWebsite())
-	site = append(site, *model.CreateWebsite())
-	site[0].Site = "Test"
-	site[0].Url = "tet"
-	site[1].Site = "sdsd"
-	site[1].Url = "sfasf"
+	data_access.ApplyMigrations()
+
+	site = data_access.SelectSite(db)
 
 	fmt.Printf("DEBUG: %+v\n", site)
 

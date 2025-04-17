@@ -19,11 +19,10 @@ import (
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 )
 
-func ApplyMigrations(dbFile string) {
-	_, err := sql.Open("sqlite", dbFile)
-	if err != nil {
-		log.Fatalf("Could not create database: %v", err)
-	}
+var dbFile = "sql/PassManagerDB.db"
+
+func ApplyMigrations() {
+
 	m, err := migrate.New(
 		"file://sql/migrations",
 		"sqlite://"+dbFile,
@@ -32,12 +31,15 @@ func ApplyMigrations(dbFile string) {
 		log.Fatalf("Could not create migration object: %v", err)
 	}
 
-	// Apply migrations
 	err = m.Up()
 	if err != nil && err != migrate.ErrNoChange {
 		log.Fatalf("Could not apply migrations: %v", err)
+	} else if err == migrate.ErrNoChange {
+		// You might want to log this case in a less fatal way
+		fmt.Println("No new migrations to apply.")
+	} else {
+		fmt.Println("Migrations applied successfully!")
 	}
-	fmt.Println("Migrations applied successfully!")
 }
 
 func InsertWebsite(website *model.Website, dbFile string) {
@@ -85,7 +87,7 @@ func LinkedTable(accID string, sitID string, dbFile string, tx *sql.Tx) error {
 	}
 	return nil
 }
-func SelectSite(dbFile string, site string, tx *sql.Tx) (string, error) {
+func SelectSiteID(dbFile string, site string, tx *sql.Tx) (string, error) {
 	var siteID string
 	query := "SELECT site_id FROM websites WHERE site = ?"
 
@@ -98,6 +100,30 @@ func SelectSite(dbFile string, site string, tx *sql.Tx) (string, error) {
 	}
 
 	return siteID, nil
+}
+
+func SelectSite(db *sql.DB) []model.Website {
+	query := "SELECT site_id FROM websites"
+	rows, err := db.Query(query)
+
+	if err != nil {
+		return nil
+	}
+	defer rows.Close()
+	var website []model.Website
+
+	// Loop through rows, using Scan to assign column data to struct fields.
+	for rows.Next() {
+		var web model.Website
+		if err := rows.Scan(&web.Site, &web.Url); err != nil {
+			return website
+		}
+		website = append(website, web)
+	}
+	if err = rows.Err(); err != nil {
+		return website
+	}
+	return website
 }
 
 func CreateAccountAndLinkSite(account *model.Account, dbFile string) error {
@@ -122,7 +148,7 @@ func CreateAccountAndLinkSite(account *model.Account, dbFile string) error {
 	}
 
 	// Select site ID within the transaction
-	siteID, err := SelectSite(dbFile, account.Site, tx)
+	siteID, err := SelectSiteID(dbFile, account.Site, tx)
 	if err != nil {
 		return fmt.Errorf("error selecting site: %v", err)
 	}
@@ -197,4 +223,12 @@ func DecryptIt(ciphered []byte, encryptedKey []byte) string {
 
 	plaintextStr := string(plaintext)
 	return plaintextStr
+}
+func MakeConnection() *sql.DB {
+	db, err := sql.Open("sqlite", dbFile)
+	if err != nil {
+		fmt.Println(err)
+		return nil
+	}
+	return db
 }
