@@ -45,7 +45,7 @@ func ApplyMigrations() {
 func InsertWebsite(website *model.Website, db *sql.DB) {
 	var insertStatement string = `INSERT INTO websites (site,url) VALUES (?,?);`
 
-	_, err := db.Exec(insertStatement, toNullString(website.Site), toNullString(website.Url))
+	_, err := db.Exec(insertStatement, toNullString(website.Site), website.Url)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -97,7 +97,7 @@ func SelectSiteID(site string, tx *sql.Tx) (string, error) {
 }
 
 func SelectSite(db *sql.DB) []model.Website {
-	query := "SELECT site_id FROM websites"
+	query := "SELECT site,url FROM websites"
 	rows, err := db.Query(query)
 
 	if err != nil {
@@ -109,8 +109,10 @@ func SelectSite(db *sql.DB) []model.Website {
 	// Loop through rows, using Scan to assign column data to struct fields.
 	for rows.Next() {
 		var web model.Website
+
 		if err := rows.Scan(&web.Site, &web.Url); err != nil {
-			return website
+			log.Println("Error scanning row:", err) // Log the error instead of returning
+			continue                                // Skip this row and move to the next one
 		}
 		website = append(website, web)
 	}

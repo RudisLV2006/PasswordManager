@@ -1,5 +1,7 @@
 package model
 
+import "database/sql"
+
 type Account struct {
 	Username    string `json:"username"`
 	Site        string `json:"site"`
@@ -21,8 +23,8 @@ func CreateAccount() *Account {
 }
 
 type Website struct {
-	Site string `json:"site"`
-	Url  string `json:"url"`
+	Site string         `json:"site"`
+	Url  sql.NullString `json:"url"`
 }
 
 // Konstroktors

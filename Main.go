@@ -11,11 +11,15 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var site []model.Website
 var db = data_access.MakeConnection()
 
 func getWebsite(c *gin.Context) {
+	site := data_access.SelectSite(db)
+	fmt.Println(site)
 	c.IndentedJSON(http.StatusOK, site)
+}
+func getAccount(c *gin.Context) {
+	fmt.Println("I will be implemented")
 }
 func postWebsite(c *gin.Context) {
 	var newSite = *model.CreateWebsite()
@@ -23,8 +27,6 @@ func postWebsite(c *gin.Context) {
 	if err := c.BindJSON(&newSite); err != nil {
 		return
 	}
-
-	site = append(site, newSite)
 
 	data_access.InsertWebsite(&newSite, db)
 
@@ -47,19 +49,12 @@ func postAccount(c *gin.Context) {
 
 	c.IndentedJSON(http.StatusCreated, newAccount)
 }
-func debug(c *gin.Context) {
-	c.IndentedJSON(http.StatusOK, len(site))
-}
 func main() {
 	data_access.ApplyMigrations()
 
-	site = data_access.SelectSite(db)
-
-	fmt.Printf("DEBUG: %+v\n", site)
-
 	router := gin.Default()
 	router.GET("/website", getWebsite)
-	router.GET("/debug", debug)
+	// router.GET("/debug", debug)
 	router.POST("/website", postWebsite)
 	router.POST("/account", postAccount)
 
