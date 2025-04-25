@@ -42,16 +42,10 @@ func ApplyMigrations() {
 	}
 }
 
-func InsertWebsite(website *model.Website, dbFile string) {
-	db, err := sql.Open("sqlite", dbFile)
-
-	if err != nil {
-		log.Fatal("Can't make connect")
-	}
-	defer db.Close()
+func InsertWebsite(website *model.Website, db *sql.DB) {
 	var insertStatement string = `INSERT INTO websites (site,url) VALUES (?,?);`
 
-	_, err = db.Exec(insertStatement, toNullString(website.Site), toNullString(website.Url))
+	_, err := db.Exec(insertStatement, toNullString(website.Site), toNullString(website.Url))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -59,7 +53,7 @@ func InsertWebsite(website *model.Website, dbFile string) {
 	fmt.Println("Website inserted successfully!")
 }
 
-func InsertAccount(account *model.Account, dbFile string, tx *sql.Tx) (string, error) {
+func InsertAccount(account *model.Account, tx *sql.Tx) (string, error) {
 	key := DeriveEncryptionKey(account.Secret_key, account.GetSalt())
 
 	const insertStatement string = `INSERT INTO accounts (username,encrypted_password,salt,user_id) VALUES (?,?,?,?);`
@@ -79,7 +73,7 @@ func InsertAccount(account *model.Account, dbFile string, tx *sql.Tx) (string, e
 
 	return strconv.FormatInt(lastInsertId, 10), nil
 }
-func LinkedTable(accID string, sitID string, dbFile string, tx *sql.Tx) error {
+func LinkedTable(accID string, sitID string, tx *sql.Tx) error {
 	const insertStatement string = `INSERT INTO account_site VALUES (?,?);`
 	_, err := tx.Exec(insertStatement, accID, sitID)
 	if err != nil {
@@ -87,7 +81,7 @@ func LinkedTable(accID string, sitID string, dbFile string, tx *sql.Tx) error {
 	}
 	return nil
 }
-func SelectSiteID(dbFile string, site string, tx *sql.Tx) (string, error) {
+func SelectSiteID(site string, tx *sql.Tx) (string, error) {
 	var siteID string
 	query := "SELECT site_id FROM websites WHERE site = ?"
 
@@ -126,14 +120,7 @@ func SelectSite(db *sql.DB) []model.Website {
 	return website
 }
 
-func CreateAccountAndLinkSite(account *model.Account, dbFile string) error {
-	// Open the database connection
-	db, err := sql.Open("sqlite", dbFile)
-	if err != nil {
-		return fmt.Errorf("can't connect to database: %v", err)
-	}
-	defer db.Close()
-
+func CreateAccountAndLinkSite(account *model.Account, db *sql.DB) error {
 	// Begin a new transaction
 	tx, err := db.Begin()
 	defer tx.Rollback()
@@ -142,19 +129,19 @@ func CreateAccountAndLinkSite(account *model.Account, dbFile string) error {
 	}
 
 	// Insert account within the transaction
-	accountID, err := InsertAccount(account, dbFile, tx)
+	accountID, err := InsertAccount(account, tx)
 	if err != nil {
 		return fmt.Errorf("error inserting account: %v", err)
 	}
 
 	// Select site ID within the transaction
-	siteID, err := SelectSiteID(dbFile, account.Site, tx)
+	siteID, err := SelectSiteID(account.Site, tx)
 	if err != nil {
 		return fmt.Errorf("error selecting site: %v", err)
 	}
 
 	// Link the account to the site within the transaction
-	err = LinkedTable(accountID, siteID, dbFile, tx)
+	err = LinkedTable(accountID, siteID, tx)
 	if err != nil {
 		return fmt.Errorf("error linking account to site: %v", err)
 	}

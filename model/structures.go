@@ -3,7 +3,7 @@ package model
 type Account struct {
 	Username    string `json:"username"`
 	Site        string `json:"site"`
-	AccountName string `json:"account_name"`
+	AccountName string /* `json:"account_name"` */
 	Password    string `json:"password"`
 	Secret_key  string `json:"secretKey"`
 	salt        []byte

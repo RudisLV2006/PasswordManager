@@ -25,11 +25,27 @@ func postWebsite(c *gin.Context) {
 	}
 
 	site = append(site, newSite)
-	fmt.Printf("DEBUG NewSite Addr: %p, Data: %+v\n", &newSite, newSite)
 
-	fmt.Printf("Current slice: %+v\n", site)
+	data_access.InsertWebsite(&newSite, db)
 
 	c.IndentedJSON(http.StatusCreated, newSite)
+}
+func postAccount(c *gin.Context) {
+	var newAccount = *model.CreateAccount()
+
+	if err := c.BindJSON(&newAccount); err != nil {
+		return
+	}
+
+	newAccount.AccountName = "Kristaps"
+	newAccount.SetSalt(makeSalt())
+
+	err := data_access.CreateAccountAndLinkSite(&newAccount, db)
+	if err != nil {
+		return
+	}
+
+	c.IndentedJSON(http.StatusCreated, newAccount)
 }
 func debug(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, len(site))
@@ -45,6 +61,7 @@ func main() {
 	router.GET("/website", getWebsite)
 	router.GET("/debug", debug)
 	router.POST("/website", postWebsite)
+	router.POST("/account", postAccount)
 
 	router.Run("localhost:8080")
 }
