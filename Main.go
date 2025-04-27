@@ -15,23 +15,27 @@ var db = data_access.MakeConnection()
 
 func getWebsite(c *gin.Context) {
 	site := data_access.SelectSite(db)
-	fmt.Println(site)
 	c.IndentedJSON(http.StatusOK, site)
 }
 func getAccount(c *gin.Context) {
 	fmt.Println("I will be implemented")
 }
+
 func postWebsite(c *gin.Context) {
 	var newSite = *model.CreateWebsite()
 
 	if err := c.BindJSON(&newSite); err != nil {
 		return
 	}
-
-	data_access.InsertWebsite(&newSite, db)
+	if err := data_access.SearchSite(db,newSite.Site); err == nil{
+		data_access.InsertWebsite(&newSite, db)
+	}else{
+		fmt.Println("Site already exists!")
+	}
 
 	c.IndentedJSON(http.StatusCreated, newSite)
 }
+
 func postAccount(c *gin.Context) {
 	var newAccount = *model.CreateAccount()
 
@@ -54,7 +58,9 @@ func main() {
 
 	router := gin.Default()
 	router.GET("/website", getWebsite)
-	// router.GET("/debug", debug)
+
+
+
 	router.POST("/website", postWebsite)
 	router.POST("/account", postAccount)
 

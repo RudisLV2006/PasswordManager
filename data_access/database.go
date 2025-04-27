@@ -45,7 +45,7 @@ func ApplyMigrations() {
 func InsertWebsite(website *model.Website, db *sql.DB) {
 	var insertStatement string = `INSERT INTO websites (site,url) VALUES (?,?);`
 
-	_, err := db.Exec(insertStatement, toNullString(website.Site), website.Url)
+	_, err := db.Exec(insertStatement, toNullString(website.Site), toNullString(website.Url))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -72,14 +72,6 @@ func InsertAccount(account *model.Account, tx *sql.Tx) (string, error) {
 	}
 
 	return strconv.FormatInt(lastInsertId, 10), nil
-}
-func LinkedTable(accID string, sitID string, tx *sql.Tx) error {
-	const insertStatement string = `INSERT INTO account_site VALUES (?,?);`
-	_, err := tx.Exec(insertStatement, accID, sitID)
-	if err != nil {
-		return err
-	}
-	return nil
 }
 func SelectSiteID(site string, tx *sql.Tx) (string, error) {
 	var siteID string
@@ -109,10 +101,16 @@ func SelectSite(db *sql.DB) []model.Website {
 	// Loop through rows, using Scan to assign column data to struct fields.
 	for rows.Next() {
 		var web model.Website
+		var url sql.NullString
 
-		if err := rows.Scan(&web.Site, &web.Url); err != nil {
+		if err := rows.Scan(&web.Site, &url); err != nil {
 			log.Println("Error scanning row:", err) // Log the error instead of returning
 			continue                                // Skip this row and move to the next one
+		}
+		if url.Valid {
+			web.Url = url.String
+		} else {
+			web.Url = ""
 		}
 		website = append(website, web)
 	}
@@ -120,6 +118,29 @@ func SelectSite(db *sql.DB) []model.Website {
 		return website
 	}
 	return website
+}
+func SearchSite(db *sql.DB, searchTerm string) error {
+	query := "SELECT site FROM websites WHERE site LIKE ?"
+	siteName := "%" + searchTerm + "%" // assuming searchTerm is the value you're looking for
+
+	rows, err := db.Query(query, siteName)
+
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+
+    if !rows.Next() {
+        return nil // No matching site found, return nil (no error)
+    }
+
+    var foundSite string
+    if err := rows.Scan(&foundSite); err != nil {
+        return err // return the error if there was an issue scanning
+    }
+
+    // If you reach here, that means a matching site was found
+    return fmt.Errorf("site already exists: %s", foundSite)
 }
 
 func CreateAccountAndLinkSite(account *model.Account, db *sql.DB) error {
@@ -156,7 +177,14 @@ func CreateAccountAndLinkSite(account *model.Account, db *sql.DB) error {
 
 	return nil
 }
-
+func LinkedTable(accID string, sitID string, tx *sql.Tx) error {
+	const insertStatement string = `INSERT INTO account_site VALUES (?,?);`
+	_, err := tx.Exec(insertStatement, accID, sitID)
+	if err != nil {
+		return err
+	}
+	return nil
+}
 func toNullString(s string) sql.NullString {
 	if s == "" {
 		return sql.NullString{Valid: false}
