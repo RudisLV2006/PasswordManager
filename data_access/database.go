@@ -130,17 +130,17 @@ func SearchSite(db *sql.DB, searchTerm string) error {
 	}
 	defer rows.Close()
 
-    if !rows.Next() {
-        return nil // No matching site found, return nil (no error)
-    }
+	if !rows.Next() {
+		return nil // No matching site found, return nil (no error)
+	}
 
-    var foundSite string
-    if err := rows.Scan(&foundSite); err != nil {
-        return err // return the error if there was an issue scanning
-    }
+	var foundSite string
+	if err := rows.Scan(&foundSite); err != nil {
+		return err // return the error if there was an issue scanning
+	}
 
-    // If you reach here, that means a matching site was found
-    return fmt.Errorf("site already exists: %s", foundSite)
+	// If you reach here, that means a matching site was found
+	return fmt.Errorf("site already exists: %s", foundSite)
 }
 
 func CreateAccountAndLinkSite(account *model.Account, db *sql.DB) error {
