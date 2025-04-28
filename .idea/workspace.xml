@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="4afbb628-09c6-4327-aa78-211e0c24e9d0" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/Main.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data_access/database.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ideja.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/model/structures.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/sql/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/sql/migrations/1_create_websites_table.down.sql" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/sql/migrations/1_create_websites_table.up.sql" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/sql/migrations/2_create_users_table.down.sql" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/sql/migrations/2_create_users_table.up.sql" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/sql/migrations/3_create_accounts_table.down.sql" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/sql/migrations/3_create_accounts_table.up.sql" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/sql/migrations/4_create_account_site_table.down.sql" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/sql/migrations/4_create_account_site_table.up.sql" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/decode_test.go" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "associatedIndex": 4
+}]]></component>
+  <component name="ProjectId" id="2wLaITaZ0QuEfCjn1qPHxGB3QNN" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Python.main.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "main",
+    "last_opened_file_path": "C:/Programming/PT2022/password_manager",
+    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable"
+  }
+}]]></component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-python-sdk-a5bc9544c897-aa17d162503b-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-243.23654.177" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="4afbb628-09c6-4327-aa78-211e0c24e9d0" name="Changes" comment="" />
+      <created>1745823227377</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1745823227377</updated>
+    </task>
+    <servers />
+  </component>
+</project>

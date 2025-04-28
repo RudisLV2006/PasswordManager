@@ -25,20 +25,20 @@ func TestDecode(t *testing.T) {
 }
 
 func TestDecrypt(t *testing.T) {
-	var expected string = "rudis"
-	salt, err := base64.StdEncoding.DecodeString("Ad8g84TRiNZje1buvhzF9w==")
+	var expected string = "suns123"
+	salt, err := base64.StdEncoding.DecodeString("UQSgnOat13uaJ/eqnxnvMA==")
 	if err != nil {
 		t.Fatalf("Error decoding string: %v", err)
 	}
 	t.Logf("saly: %v", salt)
 
-	encrypted_password, err := base64.StdEncoding.DecodeString("hY/EKLVwMRiAslkg8YRGhLOs7L6rEXm1gUkqyWXl//ur")
+	encrypted_password, err := base64.StdEncoding.DecodeString("nXTFJp65JwR3JWSl9HJM5F4zBo2nJhDR/cddDezhnBRBwho=")
 	if err != nil {
 		t.Fatalf("Error decoding string: %v", err)
 	}
 	t.Logf("Encrypted password: %v", encrypted_password)
 
-	var secret_key string = "test"
+	var secret_key string = "asd"
 
 	key := data_access.DeriveEncryptionKey(secret_key, salt)
 	t.Logf("Derived key: %v", key)
